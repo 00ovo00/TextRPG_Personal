@@ -33,7 +33,7 @@ namespace TextRPG
         GameMode mode = GameMode.Lobby;
         MessageType msgtype = MessageType.Normal;
 
-        Player player = new Player(1, "Newbie", PlayerType.Warrior, 10, 5, 100, 1500);
+        Warrior player = new Warrior(1, "Newbie", 10, 5, 100, 1500);
         Store store = new Store();
         Inventory inventory = new Inventory();
         Utility utility = new Utility();
