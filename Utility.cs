@@ -26,6 +26,12 @@ namespace TextRPG
                 case MessageType.LackGold:
                     Console.WriteLine("Gold 가 부족합니다.");
                     break;
+                case MessageType.RestSucceed:
+                    Console.WriteLine("휴식을 완료했습니다.");
+                    break;
+                case MessageType.RestFailed:
+                    Console.WriteLine("체력이 충분합니다! 휴식할 수 없습니다.");
+                    break;
             }
             Console.WriteLine("\n원하시는 행동을 입력해주세요.");
             Console.Write(">> ");
