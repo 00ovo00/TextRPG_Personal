@@ -19,19 +19,23 @@ namespace TextRPG
             DefenseItem item = new DefenseItem("수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000);
             DefenseItem item1 = new DefenseItem("무쇠갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000);
             DefenseItem item2 = new DefenseItem("스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500);
+            DefenseItem item6 = new DefenseItem("갑갑옷", 1, "갑옷이 아니라 그냥 갑갑한 옷입니다.", 5);
 
             // 공격 아이템
             AttackItem item3 = new AttackItem("낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600);
             AttackItem item4 = new AttackItem("청동 도끼", 5, "어디선가 사용됐던거 같은 도끼입니다.", 1500);
             AttackItem item5 = new AttackItem("스파르타의 창", 7, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 3000);
+            AttackItem item7 = new AttackItem("컴활", 10, "컴퓨터가 대신 에임을 맞춰주는 활입니다.", 4000);
 
             // 아이템들을 상점 목록에 추가
             shoppingList.Add(item);
             shoppingList.Add(item1);
             shoppingList.Add(item2);
+            shoppingList.Add(item6);
             shoppingList.Add(item3);
             shoppingList.Add(item4);
             shoppingList.Add(item5);
+            shoppingList.Add(item7);
         }
 
         // 상점에서 아이템 목록을 보여주는 함수
