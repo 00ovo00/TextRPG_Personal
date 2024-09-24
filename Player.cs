@@ -7,12 +7,7 @@ using System.Threading.Tasks;
 
 namespace TextRPG
 {
-    enum PlayerType
-    {
-        None,
-        Warrior,    // 전사
-    }
-
+    // 플레이어 클래스(기본)
     class Player
     {
         Utility utility = new Utility();
@@ -20,7 +15,6 @@ namespace TextRPG
         // 필드
         private int _level;
         private string _name;
-        private PlayerType _job;
         private float _attack;
         private float _defense;
         private float _buffedAttack;
@@ -31,7 +25,6 @@ namespace TextRPG
         // 프로퍼티
         public int Level { get; set; }
         public string Name { get; set; }
-        public PlayerType Job { get; set; }
         public float Attack { get; set; }
         public float Defense { get; set; }
         public float BuffedAttack
@@ -56,11 +49,10 @@ namespace TextRPG
         public int Gold { get; set; }
 
         // 플레이어 생성자 - 초기 상태 설정
-        public Player(int level, string name, PlayerType job, float attack, float defense, float hp, int gold)
+        protected Player(int level, string name, float attack, float defense, float hp, int gold)
         {
             Level = level;
             Name = name;
-            Job = job;
             Attack = attack;
             Defense = defense;
             BuffedAttack = 0;
@@ -76,12 +68,8 @@ namespace TextRPG
             Console.Clear();
 
             string job = null;
-            switch (player.Job)
-            {
-                case PlayerType.Warrior:
-                    job = "전사";
-                    break;
-            }
+            if (player is Warrior)
+                job = "전사";
 
             // 플레이어 상태 출력
             Console.WriteLine("상태 보기");
@@ -117,6 +105,14 @@ namespace TextRPG
                     msgtype = MessageType.WrongInput;
                     return GameMode.ShowState;
             }
+        }
+    }
+    // 전사 클래스 (플레이어 클래스를 상속)
+    class Warrior : Player
+    {
+        public Warrior(int level, string name, float attack, float defense, float hp, int gold)
+            : base(level, name, attack, defense, hp, gold)
+        {
         }
     }
 }
