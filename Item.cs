@@ -25,7 +25,7 @@ namespace TextRPG
         public bool IsSet { get; set; }  // 장착 여부
 
         // 아이템 생성자 - 기본 정보 설정
-        public Item(string name, string description, int price, bool isOwn = false, bool isSet = false)
+        protected Item(string name, string description, int price, bool isOwn = false, bool isSet = false)
         {
             Name = name;
             Description = description;

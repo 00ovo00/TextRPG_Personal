@@ -13,9 +13,11 @@ namespace TextRPG
         Lobby,  // 로비(시작화면)
         ShowState,  // 상태보기
         ShowInven,  // 인벤토리 보기
-        GoStore,    // 상점
+        GoStore,    // 상점가기
         BuyItem,    // 아이템 구입
+        SellItem,    // 아이템 판매
         EquipItem,  // 장착관리
+        GoShelter,  // 휴식하기
     }
 
     enum MessageType
@@ -24,7 +26,18 @@ namespace TextRPG
         WrongInput, // 잘못된 입력 처리
         AlreadyBought,  // 중복 구매 방지
         PurchaseSucceed,    // 구매 완료
+        SaleSucceed,    // 판매 완료
         LackGold,   // 재화 부족
+        RestSucceed, // 휴식 완료
+        RestFailed, // 휴식 실패
+    }
+    enum PrintType
+    {
+        StoreMain,  // 상점 메인 화면
+        StoreBuy, // 상점 구입 화면
+        StoreSell, // 상점 판매 화면
+        InvenMain, // 인벤토리 메인 화면
+        InvenEquip, // 인벤토리 장착 화면
     }
 
     public class Game
@@ -33,7 +46,7 @@ namespace TextRPG
         GameMode mode = GameMode.Lobby;
         MessageType msgtype = MessageType.Normal;
 
-        Player player = new Player(1, "Newbie", PlayerType.Warrior, 10, 5, 100, 1500);
+        Warrior player = new Warrior(1, "Newbie", 10, 5, 100, 150000);
         Store store = new Store();
         Inventory inventory = new Inventory();
         Utility utility = new Utility();
@@ -61,6 +74,12 @@ namespace TextRPG
                 case GameMode.BuyItem:
                     ProcessBuyItem();
                     break;
+                case GameMode.SellItem:
+                    ProcessSellItem();
+                    break;
+                case GameMode.GoShelter:
+                    ProcessGoShelter();
+                    break;
             }
         }
 
@@ -73,6 +92,7 @@ namespace TextRPG
             Console.WriteLine("1.상태 보기");
             Console.WriteLine("2.인벤토리");
             Console.WriteLine("3.상점");
+            Console.WriteLine("4.휴식하기");
 
             // 사용자 입력 처리
             int input = utility.InputFromUser(ref msgtype);
@@ -89,6 +109,10 @@ namespace TextRPG
                 case 3:
                     msgtype = MessageType.Normal;
                     mode = GameMode.GoStore;
+                    break;
+                case 4:
+                    msgtype = MessageType.Normal;
+                    mode = GameMode.GoShelter;
                     break;
                 default:
                     msgtype = MessageType.WrongInput;
@@ -120,6 +144,14 @@ namespace TextRPG
         public void ProcessBuyItem()
         {
             mode = store.ProcessBuyItem(player, ref msgtype, inventory);
+        }
+        public void ProcessSellItem()
+        {
+            mode = store.ProcessSellItem(player, ref msgtype, inventory);
+        }
+        public void ProcessGoShelter()
+        {
+            mode = player.ProcessGoShelter(player, ref msgtype);
         }
     }
 }
