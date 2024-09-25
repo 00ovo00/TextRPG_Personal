@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TextRPG
+﻿namespace TextRPG
 {
     internal class Store
     {
@@ -43,47 +36,15 @@ namespace TextRPG
         {
             Console.Clear();
             Console.WriteLine("상점");
-            Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.\n");
+            Console.WriteLine("아이템을 사고 팔 수 있는 상점입니다.\n");
             Console.WriteLine("[보유 골드]");
             Console.WriteLine($"{gold} G");
-            Console.WriteLine("\n[아이템 목록]");
 
-            // 상점 아이템 목록 출력
-            foreach (Item item in shoppingList)
-            {
-                string itemType = string.Empty;
-                string itemValue = string.Empty;
-
-                // 공격 아이템인지 방어 아이템인지 확인 후 출력 형식 설정
-                if (item is AttackItem attackItem)
-                {
-                    itemType = "공격력";
-                    itemValue = $"+{attackItem.Attack}";
-                }
-                else if (item is DefenseItem defenseItem)
-                {
-                    itemType = "방어력";
-                    itemValue = $"+{defenseItem.Defense}";
-                }
-
-                // 아이템 정보를 정렬하여 출력
-                string nameColumn = utility.PadRightWithVisualWidth(item.Name, 15);
-                string typeColumn = utility.PadRightWithVisualWidth(itemType, 4);
-                string valueColumn = utility.PadRightWithVisualWidth(itemValue, 4);
-                string descriptionColumn = utility.PadRightWithVisualWidth(item.Description, 50);
-
-                Console.Write(
-                    $"- {nameColumn} | " +
-                    $"{typeColumn} {valueColumn} | " +
-                    $"{descriptionColumn} | "
-                );
-                if (item.IsOwn)
-                    Console.WriteLine("구매완료");  // 이미 구매한 경우
-                else
-                    Console.WriteLine($"{item.Price} G");  // 구매하지 않은 경우 가격 출력
-            }
+            // 아이템 목록 출력
+            utility.PrintItemList(PrintType.StoreMain, shoppingList);
 
             Console.WriteLine("\n1. 아이템구매");
+            Console.WriteLine("2. 아이템판매");
             Console.WriteLine("0. 나가기\n");
 
             // 사용자 입력 처리
@@ -96,6 +57,9 @@ namespace TextRPG
                 case 1:
                     msgtype = MessageType.Normal;
                     return GameMode.BuyItem;
+                case 2:
+                    msgtype = MessageType.Normal;
+                    return GameMode.SellItem;
                 default:
                     msgtype = MessageType.WrongInput;
                     return GameMode.GoStore;
@@ -110,42 +74,9 @@ namespace TextRPG
             Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.\n");
             Console.WriteLine("[보유 골드]");
             Console.WriteLine($"{player.Gold} G");
-            Console.WriteLine("\n[아이템 목록]");
 
-            int idx = 1;
-            foreach (Item item in shoppingList)
-            {
-                string itemType = string.Empty;
-                string itemValue = string.Empty;
-
-                // 공격 아이템인지 방어 아이템인지 확인 후 출력 형식 설정
-                if (item is AttackItem attackItem)
-                {
-                    itemType = "공격력";
-                    itemValue = $"+{attackItem.Attack}";
-                }
-                else if (item is DefenseItem defenseItem)
-                {
-                    itemType = "방어력";
-                    itemValue = $"+{defenseItem.Defense}";
-                }
-
-                // 아이템 정보를 정렬하여 출력
-                string nameColumn = utility.PadRightWithVisualWidth(item.Name, 15);
-                string typeColumn = utility.PadRightWithVisualWidth(itemType, 4);
-                string valueColumn = utility.PadRightWithVisualWidth(itemValue, 4);
-                string descriptionColumn = utility.PadRightWithVisualWidth(item.Description, 50);
-
-                Console.Write(
-                    $"- {idx++} {nameColumn} | " +
-                    $"{typeColumn} {valueColumn} | " +
-                    $"{descriptionColumn} | "
-                );
-                if (item.IsOwn)
-                    Console.WriteLine("구매완료");  // 이미 구매한 경우
-                else
-                    Console.WriteLine($"{item.Price} G");  // 구매하지 않은 경우 가격 출력
-            }
+            // 아이템 목록 출력
+            utility.PrintItemList(PrintType.StoreBuy, shoppingList);
 
             Console.WriteLine("\n0. 나가기\n");
 
@@ -154,7 +85,7 @@ namespace TextRPG
             if (input == 0)
             {
                 msgtype = MessageType.Normal;
-                return GameMode.Lobby;  // 나가기
+                return GameMode.GoStore;
             }
             else if (input >= 1 && input <= shoppingList.Count)
             {
@@ -168,7 +99,40 @@ namespace TextRPG
             }
         }
 
-        // 아이템 구매 유효성 체크 및 구입
+        // 아이템 판매 관리 하는 함수
+        public GameMode ProcessSellItem(Player player, ref MessageType msgtype, Inventory inven)
+        {
+            Console.Clear();
+            Console.WriteLine("상점 - 아이템 판매");
+            Console.WriteLine("필요없는 아이템을 팔 수 있는 상점입니다.\n");
+            Console.WriteLine("[보유 골드]");
+            Console.WriteLine($"{player.Gold} G");
+
+            // 아이템 목록 출력
+            utility.PrintItemList(PrintType.StoreSell, inven.inventory);
+
+            Console.WriteLine("\n0. 나가기\n");
+
+            // 사용자 입력에 따라 처리
+            int input = utility.InputFromUser(ref msgtype);
+            if (input == 0)
+            {
+                msgtype = MessageType.Normal;
+                return GameMode.GoStore;
+            }
+            else if (input >= 1 && input <= inven.inventory.Count)
+            {
+                msgtype = CheckSelling(input, player, inven);  // 판매 확인
+                return GameMode.SellItem;
+            }
+            else
+            {
+                msgtype = MessageType.WrongInput;  // 잘못된 입력 처리
+                return GameMode.SellItem;
+            }
+        }
+
+        // 아이템 구매 유효성 체크 및 구입 관리하는 함수
         MessageType CheckBuying(int num, Player player, Inventory inven)
         {
             Item selectedItem = shoppingList[num - 1];
@@ -188,6 +152,40 @@ namespace TextRPG
             selectedItem.IsOwn = true;
             inven.AddInven(selectedItem);
             return MessageType.PurchaseSucceed;  // 구매 성공
+        }
+
+        // 아이템 판매 유효성 체크 및 판매 관리하는 함수
+        MessageType CheckSelling(int num, Player player, Inventory inven)
+        {
+            Item selectedItem = inven.inventory[num - 1];
+
+            // 판매 처리
+            player.Gold += (int)(selectedItem.Price * 0.85f);   // 원가의 85%
+            selectedItem.IsOwn = false;
+
+            // 장착된 아이템인 경우
+            if (selectedItem.IsSet)
+            {
+                selectedItem.IsSet = false; // 장착 해제
+
+                // 공격 아이템일 경우 플레이어 공격력에 반영
+                AttackItem attackItem = selectedItem as AttackItem;
+                if (attackItem != null)
+                {
+                    player.Attack -= attackItem.Attack;
+                    player.BuffedAttack -= attackItem.Attack;
+                }
+
+                // 방어 아이템일 경우 플레이어 방어력에 반영
+                DefenseItem defenseItem = selectedItem as DefenseItem;
+                if (defenseItem != null)
+                {
+                    player.Defense -= defenseItem.Defense;
+                    player.BuffedDefense -= defenseItem.Defense;
+                }
+            }
+            inven.RemoveInven(selectedItem);    // 인벤토리에서 아이템 삭제
+            return MessageType.SaleSucceed;  // 판매 성공
         }
     }
 }

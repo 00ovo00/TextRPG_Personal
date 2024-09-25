@@ -23,6 +23,9 @@ namespace TextRPG
                 case MessageType.PurchaseSucceed:
                     Console.WriteLine("구매를 완료했습니다. ");
                     break;
+                case MessageType.SaleSucceed:
+                    Console.WriteLine("판매를 완료했습니다. ");
+                    break;
                 case MessageType.LackGold:
                     Console.WriteLine("Gold 가 부족합니다.");
                     break;
@@ -42,6 +45,76 @@ namespace TextRPG
                 return result;
             }
             return -1;
+        }
+        // 아이템 목록을 출력하는 함수
+        public void PrintItemList(PrintType type, List<Item> itemList)
+        {
+            Console.WriteLine("\n[아이템 목록]");
+
+            int idx = 1;
+            foreach (Item item in itemList)
+            {
+                string itemType = string.Empty;
+                string itemValue = string.Empty;
+
+                // 공격 아이템인지 방어 아이템인지 확인 후 출력 형식 설정
+                if (item is AttackItem attackItem)
+                {
+                    itemType = "공격력";
+                    itemValue = $"+{attackItem.Attack}";
+                }
+                else if (item is DefenseItem defenseItem)
+                {
+                    itemType = "방어력";
+                    itemValue = $"+{defenseItem.Defense}";
+                }
+
+                int nameWidth = 15;
+                int typeWidth = 4;
+                int descriptWidth = 50;
+
+                // 아이템 정보를 정렬하여 출력
+                string nameColumn = PadRightWithVisualWidth(item.Name, nameWidth);
+                string typeColumn = PadRightWithVisualWidth(itemType, typeWidth);
+                string valueColumn = PadRightWithVisualWidth(itemValue, typeWidth);
+                string descriptionColumn = PadRightWithVisualWidth(item.Description, descriptWidth);
+
+                if (type == PrintType.StoreBuy || type == PrintType.StoreSell)
+                    Console.Write($"- {idx++} {nameColumn} | ");
+                else if (type == PrintType.InvenMain  ||type == PrintType.InvenEquip)
+                {
+                    // 아이템이 장착 중이면 [E] 표시
+                    string eFlag = "   ";
+                    if (item.IsSet) { eFlag = "[E]"; }
+                    Console.Write($"- {idx++} {eFlag} {nameColumn} |");
+                }
+                else
+                    Console.Write($"- {nameColumn} | ");
+
+                Console.Write(
+                    $"{typeColumn} {valueColumn} | " +
+                    $"{descriptionColumn} "
+                );
+                switch (type)
+                {
+                    case PrintType.StoreMain:
+                    case PrintType.StoreBuy:
+                        {
+                            if (item.IsOwn)
+                                Console.WriteLine(" | 구매완료");  // 이미 구매한 경우
+                            else
+                                Console.WriteLine($" | {item.Price} G");
+                            break;
+                        }
+                    case PrintType.StoreSell:
+                        Console.WriteLine($" | {(int)(item.Price * 0.85f)} G");
+                        break;
+                    case PrintType.InvenMain:
+                    case PrintType.InvenEquip:
+                        Console.WriteLine("");
+                        break;
+                }
+            }
         }
 
         // 주어진 텍스트의 너비(한글과 영어를 구분)를 계산하는 함수

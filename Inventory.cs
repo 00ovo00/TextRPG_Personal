@@ -10,7 +10,7 @@ namespace TextRPG
     class Inventory
     {
         Utility utility = new Utility();
-        public List<Item> inven = new List<Item>(capacity: 6);
+        public List<Item> inventory = new List<Item>(capacity: 6);
 
         // 인벤토리 화면을 출력하는 함수
         public GameMode ProcessShowInven(ref MessageType msgtype)
@@ -18,43 +18,9 @@ namespace TextRPG
             Console.Clear();
             Console.WriteLine("인벤토리");
             Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
-            Console.WriteLine("\n[아이템 목록]\n");
 
-            // 인벤토리에 있는 모든 아이템을 출력
-            foreach (Item item in inven)  
-            {
-                string itemType = string.Empty;
-                string itemValue = string.Empty;
-
-                if (item is AttackItem attackItem)  // 공격 아이템인지 확인
-                {
-                    itemType = "공격력";
-                    itemValue = $"+{attackItem.Attack}";
-                }
-                else if (item is DefenseItem defenseItem)  // 방어 아이템인지 확인
-                {
-                    itemType = "방어력";
-                    itemValue = $"+{defenseItem.Defense}";
-                }
-
-                // 아이템이 장착 중이면 [E] 표시
-                string eFlag = "   ";  
-                if (item.IsSet) { eFlag = "[E]"; }
-
-                int nameWidth = 15;
-                int typeWidth = 4;
-
-                // 아이템 속성 정렬하여 출력
-                string nameColumn = utility.PadRightWithVisualWidth(item.Name, nameWidth);
-                string typeColumn = utility.PadRightWithVisualWidth(itemType, typeWidth);
-                string valueColumn = utility.PadRightWithVisualWidth(itemValue, typeWidth);
-
-                Console.WriteLine(
-                    $"- {eFlag} {nameColumn} | " +
-                    $"{typeColumn} {valueColumn} | " +
-                    $"{item.Description}"
-                );
-            }
+            // 아이템 출력
+            utility.PrintItemList(PrintType.InvenMain, inventory);
 
             Console.WriteLine("\n1. 장착 관리");
             Console.WriteLine("0. 나가기\n");
@@ -81,43 +47,9 @@ namespace TextRPG
             Console.Clear();
             Console.WriteLine("인벤토리");
             Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
-            Console.WriteLine("\n[아이템 목록]\n");
 
-            int idx = 1;
-            // 인벤토리 내 모든 아이템을 표시
-            foreach (Item item in inven)  
-            {
-                string itemType = string.Empty;
-                string itemValue = string.Empty;
-
-                if (item is AttackItem attackItem)  // 공격 아이템인지 확인
-                {
-                    itemType = "공격력";
-                    itemValue = $"+{attackItem.Attack}";
-                }
-                else if (item is DefenseItem defenseItem)  // 방어 아이템인지 확인
-                {
-                    itemType = "방어력";
-                    itemValue = $"+{defenseItem.Defense}";
-                }
-                // 아이템이 장착 중이면 [E] 표시
-                string eFlag = "   ";  
-                if (item.IsSet) { eFlag = "[E]"; }
-
-                int nameWidth = 15;
-                int typeWidth = 6;
-
-                // 아이템 속성 정렬하여 출력
-                string nameColumn = utility.PadRightWithVisualWidth(item.Name, nameWidth);
-                string typeColumn = utility.PadRightWithVisualWidth(itemType, typeWidth);
-                string valueColumn = utility.PadRightWithVisualWidth(itemValue, typeWidth);
-
-                Console.WriteLine(
-                    $"- {idx++} {eFlag} {nameColumn} | " +
-                    $"{typeColumn} {valueColumn} | " +
-                    $"{item.Description}"
-                );
-            }
+            // 아이템 출력
+            utility.PrintItemList(PrintType.InvenEquip, inventory);
 
             Console.WriteLine("\n0. 나가기\n");
 
@@ -128,7 +60,7 @@ namespace TextRPG
                 msgtype = MessageType.Normal;
                 return GameMode.ShowInven;
             }
-            else if (input >= 1 && input <= inven.Count)
+            else if (input >= 1 && input <= inventory.Count)
             {
                 EquipItem(input - 1, player);  // 선택된 아이템 장착/해제
                 return GameMode.EquipItem;
@@ -143,13 +75,18 @@ namespace TextRPG
         // 인벤토리에 아이템을 추가하는 함수
         public void AddInven(Item item)
         {
-            inven.Add(item);
+            inventory.Add(item);
+        }
+        // 인벤토리의 아이템을 삭제하는 함수
+        public void RemoveInven(Item item)
+        {
+            inventory.Remove(item);
         }
 
         // 아이템을 장착 또는 해제하는 함수
-        void EquipItem(int num, Player player)
+        public void EquipItem(int num, Player player)
         {
-            Item item = inven[num];
+            Item item = inventory[num];
 
             int sign;  // 장착이면 +1, 해제이면 -1
             if (item.IsSet) { sign = -1; }
