@@ -9,8 +9,9 @@ namespace TextRPG
 {
     class Inventory
     {
-        Utility utility = new Utility();
+        Utility utility = Utility.Instance;
         public List<Item> inventory = new List<Item>(capacity: 6);
+        public Dictionary<string, Item> EquippedItems = new Dictionary<string, Item>();
 
         // 인벤토리 화면을 출력하는 함수
         public GameMode ProcessShowInven(ref MessageType msgtype)

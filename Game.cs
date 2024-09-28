@@ -49,7 +49,7 @@ namespace TextRPG
         Warrior player = new Warrior(1, "Newbie", 10, 5, 100, 150000);
         Store store = new Store();
         Inventory inventory = new Inventory();
-        Utility utility = new Utility();
+        Utility utility = Utility.Instance;
 
         // 게임의 상태에 따라 적절한 처리를 진행하는 함수(사실상 메인의 역할)
         public void Process()
@@ -122,7 +122,8 @@ namespace TextRPG
 
         public void ProcessShowState()
         {
-            mode = player.ProcessShowState(player, ref msgtype);
+            //mode = player.ProcessShowState(player, ref msgtype);
+            mode = player.ProcessShowState(ref msgtype);
         }
 
         public void ProcessShowInven()
@@ -151,7 +152,7 @@ namespace TextRPG
         }
         public void ProcessGoShelter()
         {
-            mode = player.ProcessGoShelter(player, ref msgtype);
+            mode = player.ProcessGoShelter(ref msgtype);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace TextRPG
     // 플레이어 클래스(기본)
     class Player
     {
-        Utility utility = new Utility();
+        Utility utility = Utility.Instance;
 
         // 필드
         private int _level;
@@ -61,36 +61,35 @@ namespace TextRPG
             Gold = gold;
         }
 
-
         // 플레이어의 상태를 출력하는 함수
-        public GameMode ProcessShowState(Player player, ref MessageType msgtype)
+        public GameMode ProcessShowState(ref MessageType msgtype)
         {
             Console.Clear();
 
             string job = null;
-            if (player is Warrior)
+            if (this is Warrior)
                 job = "전사";
 
             // 플레이어 상태 출력
             Console.WriteLine("상태 보기");
             Console.WriteLine("캐릭터의 정보가 표시됩니다.\n");
 
-            Console.WriteLine($"Lv. {player.Level.ToString("D2")}");
-            Console.WriteLine(player.Name + $" ( {job} )");
+            Console.WriteLine($"Lv. {this.Level.ToString("D2")}");
+            Console.WriteLine(this.Name + $" ( {job} )");
 
             // 버프가 있을 경우 해당 값을 추가해서 출력
-            if (player.BuffedAttack > 0)
-                Console.WriteLine($"공격력 : {player.Attack - player.BuffedAttack} (+{player.BuffedAttack})");
+            if (this.BuffedAttack > 0)
+                Console.WriteLine($"공격력 : {this.Attack - this.BuffedAttack} (+{this.BuffedAttack})");
             else
-                Console.WriteLine($"공격력 : {player.Attack}");
+                Console.WriteLine($"공격력 : {this.Attack}");
 
-            if (player.BuffedDefense > 0)
-                Console.WriteLine($"방어력 : {player.Defense - player.BuffedDefense} (+{player.BuffedDefense})");
+            if (this.BuffedDefense > 0)
+                Console.WriteLine($"방어력 : {this.Defense - this.BuffedDefense} (+{this.BuffedDefense})");
             else
-                Console.WriteLine($"방어력 : {player.Defense}");
+                Console.WriteLine($"방어력 : {this.Defense}");
 
-            Console.WriteLine($"체  력 : {player.Hp}");
-            Console.WriteLine($" Gold  : {player.Gold}");
+            Console.WriteLine($"체  력 : {this.Hp}");
+            Console.WriteLine($" Gold  : {this.Gold}");
 
             Console.WriteLine("\n0. 나가기\n");
 
@@ -106,13 +105,14 @@ namespace TextRPG
                     return GameMode.ShowState;
             }
         }
+
         // 플레이어가 휴식할 수 있도록 관리하는 함수
-        public GameMode ProcessGoShelter(Player player, ref MessageType msgtype)
+        public GameMode ProcessGoShelter(ref MessageType msgtype)
         {
             int restPrice = 500;
             Console.Clear();
             Console.WriteLine("휴식하기");
-            Console.WriteLine($"{restPrice} G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : {player.Gold} G)");
+            Console.WriteLine($"{restPrice} G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : {this.Gold} G)");
             Console.WriteLine("\n1. 휴식하기");
             Console.WriteLine("0. 나가기\n");
 
@@ -124,7 +124,7 @@ namespace TextRPG
                     msgtype = MessageType.Normal;
                     return GameMode.Lobby;
                 case 1:
-                    msgtype = ProcessRest(player, restPrice);
+                    msgtype = ProcessRest(restPrice);
                     return GameMode.GoShelter;
                 default:
                     msgtype = MessageType.WrongInput;
@@ -132,20 +132,20 @@ namespace TextRPG
             }
         }
         // 휴식 요청의 유효성 체크 및 휴식 실행하는 함수
-        MessageType ProcessRest(Player player, int price)
+        MessageType ProcessRest(int price)
         {
             // 휴식 유효성 체크
-            if (player.Hp >= 100)   // 휴식 가능한 상태인지 확인
+            if (this.Hp >= 100)   // 휴식 가능한 상태인지 확인
                 return MessageType.RestFailed;
-            if (player.Gold < price)    // 골드가 충분한지 확인
+            if (this.Gold < price)    // 골드가 충분한지 확인
                 return MessageType.LackGold;
             // 골드 차감하고 체력 회복, 최대 회복체력 100으로 제한
             else
             {
-                player.Gold -= price;
-                player.Hp += 100;
-                if (player.Hp >= 100)
-                    player.Hp = 100;
+                this.Gold -= price;
+                this.Hp += 100;
+                if (this.Hp >= 100)
+                    this.Hp = 100;
                 return MessageType.RestSucceed; // 휴식 완료
             }
         }

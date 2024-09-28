@@ -8,6 +8,24 @@ namespace TextRPG
 {
     class Utility
     {
+        // 필드와 생성자는 private로 보호
+        private static Utility _instance;
+        private Utility() { }
+
+        // 프로퍼티로 접근하도록 설정
+        public static Utility Instance
+        {
+            get
+            {
+                if (_instance == null)  // 한번만 생성되도록 제한
+                {
+                    _instance = new Utility();
+                }
+                return _instance;
+            }
+            // 설정은 필요없으므로 setter 생략
+        }
+
         // 사용자 입력을 받고 메시지 타입에 따라 적절한 메시지를 출력하는 함수
         public int InputFromUser(ref MessageType msgType)
         {

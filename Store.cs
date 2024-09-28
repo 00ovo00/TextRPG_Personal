@@ -2,7 +2,7 @@
 {
     internal class Store
     {
-        Utility utility = new Utility();
+        Utility utility = Utility.Instance;
         public List<Item> shoppingList = new List<Item>(capacity: 6);  // 상점에 판매할 아이템 목록
 
         // 상점 생성자 - 초기 아이템 목록 설정
